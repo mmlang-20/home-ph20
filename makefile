@@ -1,30 +1,38 @@
 # $@ = target, $^ = all dep, $< = first dep
 
-# insertcodehere script
-code_var = insertcodehere.py
-code_exe = python $(code_var)
+# making the pdf script
+makepdf = pdflatex -shell-escape -interaction=nonstopmode -file-line-error
 
-# pdf function script
-pdf_var = pdf_function.py
-pdf_exe = python $(pdf_var)
-
+# making plots function script
+code = ph20_set3-2.py
+makeplotz = python $(code)
 
 
 # generate pdf
-results.pdf : pdf_var program_1.py program_2.py
-	python $< *.dat > $@
+results.pdf : ph20_set3-2.tex $(code) png 
+	$(makepdf) $<
 
 # produce plots:
-.PHONY : dats
+all : results.pdf
 
-dats : program_1.dat program_2.dat
+# look at pdf
+view : 
+	open results.pdf
 
-%.dat : home/ph20/ph20_set3.ipynb insertcodehere.py
-	code_exe $<  $*.dat
+# grouping the plots to check for so it's easier to write in a dependency statement
+plotz1 : plot1.png plot2.png plot3.png plot4.png plot5.png
 
+plotz2 : plot6.png plot7.png plot8.png plot9.png plot10.png
 
-.PHONY : clean
+plotz3 : plot11.png plot12.png plot13.png plot14.png plot15.png plot16.png
+
+plotz : plotz1 plotz2 plotz3
+
 
 clean :
-	rm -f *.dat
-	rm -f results.pdf
+	rm -f results.pdf *.png
+
+#remaking the plots if they're not all there/aren't made
+.PHONY png : $(code)
+	$(makeplotz)
+
